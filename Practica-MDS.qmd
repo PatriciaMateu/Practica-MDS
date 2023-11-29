@@ -5,4 +5,41 @@ format: html
 editor: visual
 ---
 
+Link al repositorio: [Repositorio Github](https://github.com/PatriciaMateu/Practica-MDS)
+
 La práctica consiste en representar gráficamente (con solo 2 coordenadas principales) las matrices de similitud generadas por cada kernel coloreando los puntos de acuerdo al grupo de animales de acuerdo a su phylum.
+
+```{r}
+animals_PM <- read.table("ANIMALS-matrixPM.txt", header=FALSE)
+animals_SP <- read.table("ANIMALS-matrixSP.txt", header=FALSE)
+animals_VH <- read.table("ANIMALS-matrixVH.txt", header=FALSE)
+animals_phylum <- read.table("fileListANIMAL_phylum.txt", header=TRUE)
+
+str(animals_phylum)
+```
+
+
+```{r}
+mds_VH <- cmdscale(animals_VH,k=2)
+plot(mds_VH)
+text(mds_VH, labels = rownames(animals_phylum))
+```
+```{r}
+# Load required packages
+library(magrittr)
+library(dplyr)
+library(ggpubr)
+# Cmpute MDS
+mds <- animals_VH %>%
+  dist() %>%          
+  cmdscale() %>%
+  as_tibble()
+colnames(mds) <- c("Dim.1", "Dim.2")
+# Plot MDS
+ggscatter(mds, x = "Dim.1", y = "Dim.2", 
+          label = rownames(animals_VH),
+          size = 1,
+          repel = F)
+```
+
+
