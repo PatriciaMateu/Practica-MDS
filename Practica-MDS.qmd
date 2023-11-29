@@ -13,33 +13,48 @@ La práctica consiste en representar gráficamente (con solo 2 coordenadas princ
 animals_PM <- read.table("ANIMALS-matrixPM.txt", header=FALSE)
 animals_SP <- read.table("ANIMALS-matrixSP.txt", header=FALSE)
 animals_VH <- read.table("ANIMALS-matrixVH.txt", header=FALSE)
-animals_phylum <- read.table("fileListANIMAL_phylum.txt", header=TRUE)
+animals_phylum <- read.table("fileListANIMAL_phylum.txt", header=FALSE)
 
 str(animals_phylum)
+
+```
+
+```{r}
+f <- function(x){sqrt(2*(1-x))}
+dist_PM <- apply(animals_PM, MARGIN=c(1, 2), FUN= f)
+dist_SP <- apply(animals_SP, MARGIN=c(1, 2), FUN= f)
+dist_VH <- apply(animals_VH, MARGIN=c(1, 2), FUN= f)
 ```
 
 
 ```{r}
-mds_VH <- cmdscale(animals_VH,k=2)
+mds_VH <- cmdscale(dist_VH,k=2)
 plot(mds_VH)
-text(mds_VH, labels = rownames(animals_phylum))
+text(mds_VH, labels = animals_phylum$V2)
 ```
+
 ```{r}
 # Load required packages
 library(magrittr)
 library(dplyr)
 library(ggpubr)
 # Cmpute MDS
-mds <- animals_VH %>%
+mds <- dist_VH %>%
   dist() %>%          
   cmdscale() %>%
   as_tibble()
 colnames(mds) <- c("Dim.1", "Dim.2")
 # Plot MDS
-ggscatter(mds, x = "Dim.1", y = "Dim.2", 
-          label = rownames(animals_VH),
+ggscatter(mds, x = "Dim.1", y = "Dim.2",
+          color = animals_phylum$V2,
+          palette = "SunsetDark",
           size = 1,
-          repel = F)
+          repel = T)
 ```
+
+```{r}
+ggplot(data = dist_VH, aes(color = animals_phylum$V2)) + geom_point()
+```
+
 
 
