@@ -1,0 +1,8 @@
+---
+title: "Practica-MDS"
+author: "Margalida Verd, Carla Martínez, Patricia Mateu"
+format: html
+editor: visual
+---
+
+La práctica consiste en representar gráficamente (con solo 2 coordenadas principales) las matrices de similitud generadas por cada kernel coloreando los puntos de acuerdo al grupo de animales de acuerdo a su phylum.
