@@ -25,7 +25,8 @@ dist_SP <- apply(animals_SP, MARGIN=c(1, 2), FUN= f)
 dist_VH <- apply(animals_VH, MARGIN=c(1, 2), FUN= f)
 ```
 
-```{r}
+```{r, warning=FALSE}
+library(tidyverse)
 animals_phylum$V2 <- as.factor(animals_phylum$V2) #para poder definir la paleta de colores
 cambio_nombres <- c("Vertebrates", "Lancelet", "Ascidian","Hechinoderms", 
                     "Hemichordates","Arthropods","Nematodes","Annelids",
@@ -33,7 +34,7 @@ cambio_nombres <- c("Vertebrates", "Lancelet", "Ascidian","Hechinoderms",
                     "Placozoans", "Poriferans")
 
 animals_phylum <- animals_phylum %>%
-  mutate("Animales" = cambio_nombres[V2])
+        mutate("Animales" = cambio_nombres[V2])
 ```
 
 ```{r}
