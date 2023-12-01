@@ -9,7 +9,7 @@ Link al repositorio: [Repositorio Github](https://github.com/PatriciaMateu/Pract
 
 $\textbf{Enunciado:}$ La práctica consiste en representar gráficamente (con solo 2 coordenadas principales) las matrices de similitud generadas por cada kernel coloreando los puntos de acuerdo al grupo de animales de acuerdo a su phylum.
 
-$\textbf{Solución:}$ 
+$\textbf{Solución:}$
 
 ```{r}
 animals_PM <- read.table("ANIMALS-matrixPM.txt", header=FALSE)
@@ -35,7 +35,6 @@ cambio_nombres <- c("Vertebrates", "Lancelet", "Ascidian","Hechinoderms",
 animals_phylum <- animals_phylum %>%
   mutate("Animales" = cambio_nombres[V2])
 ```
-
 
 ```{r}
 library(magrittr)
@@ -90,5 +89,3 @@ ggscatter(mds_SP, x = "Dim.1", y = "Dim.2",
           palette = colores,
           size = 3)
 ```
-
-
