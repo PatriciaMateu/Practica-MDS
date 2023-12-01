@@ -11,21 +11,41 @@ $\textbf{Enunciado:}$ La práctica consiste en representar gráficamente (con so
 
 $\textbf{Solución:}$
 
-```{r}
+Primero, cargamos las 4 tablas que nos dan:
+
+* `animals_PM`: matriz de similitud del kernel Pyramid Match
+* `animals_SP`: matriz de similitud del kernel Shortest-Path
+* `animals_VH`: matriz de similitud del kernel Vertex Histogram
+* `animals_phylum`: clasificación de cada animal por phylum
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
 animals_PM <- read.table("ANIMALS-matrixPM.txt", header=FALSE)
 animals_SP <- read.table("ANIMALS-matrixSP.txt", header=FALSE)
 animals_VH <- read.table("ANIMALS-matrixVH.txt", header=FALSE)
 animals_phylum <- read.table("fileListANIMAL_phylum.txt", header=FALSE)
+
 ```
 
-```{r}
+Ahora, como las cuatro matrices son de similitud, aplicaremos una función a cada una de ellas para pasar obtener las matrices de distancias. Aplicamos la función siguiente:
+
+$$
+f(x) = \sqrt{2(1-x)},
+$$
+donde $x$ representa cada entrada de las matrices. Hemos visto que esta función es una distancia.
+
+```{r,warning=FALSE,message=FALSE}
 f <- function(x){sqrt(2*(1-x))}
 dist_PM <- apply(animals_PM, MARGIN=c(1, 2), FUN= f)
 dist_SP <- apply(animals_SP, MARGIN=c(1, 2), FUN= f)
 dist_VH <- apply(animals_VH, MARGIN=c(1, 2), FUN= f)
 ```
 
-```{r, warning=FALSE}
+Bien, como la práctica nos pide colorerar los grupos de acuerdo a su phylum, vamos a transformar la variable $V2$ de la tabla "animal-phylum" (que corresponde al phylum de cada animal). Para ello, convertimos en tipo factor esta variable y cambiamos los nombres según el grupo al que pertenecen.
+
+El resultado es el siguiente:
+
+
+```{r, echo = FALSE, message = FALSE, warning=FALSE}
 library(tidyverse)
 animals_phylum$V2 <- as.factor(animals_phylum$V2) #para poder definir la paleta de colores
 cambio_nombres <- c("Vertebrates", "Lancelet", "Ascidian","Hechinoderms", 
@@ -34,10 +54,14 @@ cambio_nombres <- c("Vertebrates", "Lancelet", "Ascidian","Hechinoderms",
                     "Placozoans", "Poriferans")
 
 animals_phylum <- animals_phylum %>%
-        mutate("Animales" = cambio_nombres[V2])
+        mutate("Animales" = cambio_nombres[V2]) %>% 
+  glimpse()
 ```
+Ahora que ya tenemos los datos listos, podemos empezar con el escalamiento multidimensional. Aplicaremos la función `cmdscale()` a cada matriz de distancias y tomaremos una decisión final.
 
-```{r}
+Empezamos con el kernel Vertex Histogram. 
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
 library(magrittr)
 library(dplyr)
 library(ggpubr)
@@ -45,23 +69,26 @@ library(ggpubr)
 mds_VH <- dist_VH %>%          
   cmdscale() %>%
   as_tibble() %>% 
-  mutate("PHYLUM" = animals_phylum$Animales)
+  mutate("PHYLUM" = animals_phylum$Animales) #añadimos la variable phylum para poder agrupar
 
 colnames(mds_VH) <- c("Dim.1", "Dim.2", "PHYLUM")
 colores <- c("Vertebrates" = "blue", "Lancelet" = "red", "Ascidian" = "green",
              "Hechinoderms" = "yellow", "Hemichordates" = "purple", "Flatworms" = "pink", 
              "Nematodes" = "orange", "Annelids" = "black", "Poriferans" = "#FF7256",
              "Brachiopodas" = "#556B2F", "Arthropods" = "#00BFFF", "Mollusks" = "#EE1289",
-             "Placozoans" = "#8B1A1A", "Cnidarians" = "#C0FF3E")
+             "Placozoans" = "#8B1A1A", "Cnidarians" = "#C0FF3E") #elegimos los colores de cada grupo
 
-#Plot MDS
+
 ggscatter(mds_VH, x = "Dim.1", y = "Dim.2",
           color = "PHYLUM",
           palette = colores,
           size = 3)
 ```
+Observemos que los datos están bastante dispersos. Si bien los vertebrados estan agrupados en la parte izquierda del gráfico, los demás grupos de animales no tienen una agrupación notable. 
 
-```{r}
+Seguimos con el kernel Pyramid Match. El resultado obtenido es el siguiente:
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
 mds_PM <- dist_PM %>%          
   cmdscale() %>%
   as_tibble() %>% 
@@ -75,8 +102,11 @@ ggscatter(mds_PM, x = "Dim.1", y = "Dim.2",
           palette = colores,
           size = 3)
 ```
+A diferencia del otro gráfico, con este kernel ya vemos más agrupamiento segun el phylum. Notamos que los grupos más compactos son los vertebrados y los antrópodos. El grupo de los cnidarios también está bien agrupado.
 
-```{r}
+Finalmente, con el kernel Shortest-Path obtenemos:
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
 mds_SP <- dist_SP %>%          
   cmdscale() %>%
   as_tibble() %>% 
@@ -90,3 +120,9 @@ ggscatter(mds_SP, x = "Dim.1", y = "Dim.2",
           palette = colores,
           size = 3)
 ```
+Así como los vertebrados siguen estando agrupados, los antrópodos están más dispersos, aunque se vea una acumulación en la parte derecha del gráfico. Los moluscos y cnidarios también han quedado más agrupados que en los kernels anteriores.
+
+
+$\textbf{Conclusión:}$
+
+
