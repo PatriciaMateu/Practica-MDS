@@ -7,16 +7,15 @@ editor: visual
 
 Link al repositorio: [Repositorio Github](https://github.com/PatriciaMateu/Practica-MDS)
 
-La práctica consiste en representar gráficamente (con solo 2 coordenadas principales) las matrices de similitud generadas por cada kernel coloreando los puntos de acuerdo al grupo de animales de acuerdo a su phylum.
+$\textbf{Enunciado:}$ La práctica consiste en representar gráficamente (con solo 2 coordenadas principales) las matrices de similitud generadas por cada kernel coloreando los puntos de acuerdo al grupo de animales de acuerdo a su phylum.
+
+$\textbf{Solución:}$ 
 
 ```{r}
 animals_PM <- read.table("ANIMALS-matrixPM.txt", header=FALSE)
 animals_SP <- read.table("ANIMALS-matrixSP.txt", header=FALSE)
 animals_VH <- read.table("ANIMALS-matrixVH.txt", header=FALSE)
 animals_phylum <- read.table("fileListANIMAL_phylum.txt", header=FALSE)
-
-str(animals_phylum)
-
 ```
 
 ```{r}
@@ -26,35 +25,70 @@ dist_SP <- apply(animals_SP, MARGIN=c(1, 2), FUN= f)
 dist_VH <- apply(animals_VH, MARGIN=c(1, 2), FUN= f)
 ```
 
-
 ```{r}
-mds_VH <- cmdscale(dist_VH,k=2)
-plot(mds_VH)
-text(mds_VH, labels = animals_phylum$V2)
+animals_phylum$V2 <- as.factor(animals_phylum$V2) #para poder definir la paleta de colores
+cambio_nombres <- c("Vertebrates", "Lancelet", "Ascidian","Hechinoderms", 
+                    "Hemichordates","Arthropods","Nematodes","Annelids",
+                    "Mollusks", "Brachiopodas", "Flatworms", "Cnidarians",
+                    "Placozoans", "Poriferans")
+
+animals_phylum <- animals_phylum %>%
+  mutate("Animales" = cambio_nombres[V2])
 ```
 
+
 ```{r}
-# Load required packages
 library(magrittr)
 library(dplyr)
 library(ggpubr)
-# Cmpute MDS
-mds <- dist_VH %>%
-  dist() %>%          
+
+mds_VH <- dist_VH %>%          
   cmdscale() %>%
-  as_tibble()
-colnames(mds) <- c("Dim.1", "Dim.2")
-# Plot MDS
-ggscatter(mds, x = "Dim.1", y = "Dim.2",
-          color = animals_phylum$V2,
-          palette = "SunsetDark",
-          size = 1,
-          repel = T)
+  as_tibble() %>% 
+  mutate("PHYLUM" = animals_phylum$Animales)
+
+colnames(mds_VH) <- c("Dim.1", "Dim.2", "PHYLUM")
+colores <- c("Vertebrates" = "blue", "Lancelet" = "red", "Ascidian" = "green",
+             "Hechinoderms" = "yellow", "Hemichordates" = "purple", "Flatworms" = "pink", 
+             "Nematodes" = "orange", "Annelids" = "black", "Poriferans" = "#FF7256",
+             "Brachiopodas" = "#556B2F", "Arthropods" = "#00BFFF", "Mollusks" = "#EE1289",
+             "Placozoans" = "#8B1A1A", "Cnidarians" = "#C0FF3E")
+
+#Plot MDS
+ggscatter(mds_VH, x = "Dim.1", y = "Dim.2",
+          color = "PHYLUM",
+          palette = colores,
+          size = 3)
 ```
 
 ```{r}
-ggplot(data = dist_VH, aes(color = animals_phylum$V2)) + geom_point()
+mds_PM <- dist_PM %>%          
+  cmdscale() %>%
+  as_tibble() %>% 
+  mutate("PHYLUM" = animals_phylum$Animales)
+
+colnames(mds_PM) <- c("Dim.1", "Dim.2", "PHYLUM")
+
+#Plot MDS
+ggscatter(mds_PM, x = "Dim.1", y = "Dim.2",
+          color = "PHYLUM",
+          palette = colores,
+          size = 3)
 ```
 
+```{r}
+mds_SP <- dist_SP %>%          
+  cmdscale() %>%
+  as_tibble() %>% 
+  mutate("PHYLUM" = animals_phylum$Animales)
+
+colnames(mds_SP) <- c("Dim.1", "Dim.2", "PHYLUM")
+
+#Plot MDS
+ggscatter(mds_SP, x = "Dim.1", y = "Dim.2",
+          color = "PHYLUM",
+          palette = colores,
+          size = 3)
+```
 
 
