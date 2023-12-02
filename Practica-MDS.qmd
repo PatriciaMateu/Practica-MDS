@@ -13,10 +13,10 @@ $\textbf{Solución:}$
 
 Primero, cargamos las 4 tablas que nos dan:
 
-* `animals_PM`: matriz de similitud del kernel Pyramid Match
-* `animals_SP`: matriz de similitud del kernel Shortest-Path
-* `animals_VH`: matriz de similitud del kernel Vertex Histogram
-* `animals_phylum`: clasificación de cada animal por phylum
+-   `animals_PM`: matriz de similitud del kernel Pyramid Match
+-   `animals_SP`: matriz de similitud del kernel Shortest-Path
+-   `animals_VH`: matriz de similitud del kernel Vertex Histogram
+-   `animals_phylum`: clasificación de cada animal por phylum
 
 ```{r, echo=FALSE,warning=FALSE,message=FALSE}
 animals_PM <- read.table("ANIMALS-matrixPM.txt", header=FALSE)
@@ -25,12 +25,11 @@ animals_VH <- read.table("ANIMALS-matrixVH.txt", header=FALSE)
 animals_phylum <- read.table("fileListANIMAL_phylum.txt", header=FALSE)
 
 ```
-
-Ahora, como las cuatro matrices son de similitud, aplicaremos una función a cada una de ellas para pasar obtener las matrices de distancias. Aplicamos la función siguiente:
+Observamos que las matrices anteriores son de similitud, por lo tanto, aplicaremos una función a cada una de ellas para obtener las matrices de distancias. Aplicamos la función siguiente:
 
 $$
 f(x) = \sqrt{2(1-x)},
-$$
+$$ 
 donde $x$ representa cada entrada de las matrices. Hemos visto que esta función es una distancia.
 
 ```{r,warning=FALSE,message=FALSE}
@@ -44,7 +43,6 @@ Bien, como la práctica nos pide colorerar los grupos de acuerdo a su phylum, va
 
 El resultado es el siguiente:
 
-
 ```{r, echo = FALSE, message = FALSE, warning=FALSE}
 library(tidyverse)
 animals_phylum$V2 <- as.factor(animals_phylum$V2) #para poder definir la paleta de colores
@@ -57,9 +55,10 @@ animals_phylum <- animals_phylum %>%
         mutate("Animales" = cambio_nombres[V2]) %>% 
   glimpse()
 ```
+
 Ahora que ya tenemos los datos listos, podemos empezar con el escalamiento multidimensional. Aplicaremos la función `cmdscale()` a cada matriz de distancias y tomaremos una decisión final.
 
-Empezamos con el kernel Vertex Histogram. 
+Empezamos con el kernel Vertex Histogram.
 
 ```{r, echo=FALSE,warning=FALSE,message=FALSE}
 library(magrittr)
@@ -84,7 +83,8 @@ ggscatter(mds_VH, x = "Dim.1", y = "Dim.2",
           palette = colores,
           size = 3)
 ```
-Observemos que los datos están bastante dispersos. Si bien los vertebrados estan agrupados en la parte izquierda del gráfico, los demás grupos de animales no tienen una agrupación notable. 
+
+Observemos que los datos están bastante dispersos. Si bien los vertebrados estan agrupados en la parte izquierda del gráfico, los demás grupos de animales no tienen una agrupación notable.
 
 Seguimos con el kernel Pyramid Match. El resultado obtenido es el siguiente:
 
@@ -102,6 +102,7 @@ ggscatter(mds_PM, x = "Dim.1", y = "Dim.2",
           palette = colores,
           size = 3)
 ```
+
 A diferencia del otro gráfico, con este kernel ya vemos más agrupamiento segun el phylum. Notamos que los grupos más compactos son los vertebrados y los antrópodos. El grupo de los cnidarios también está bien agrupado.
 
 Finalmente, con el kernel Shortest-Path obtenemos:
@@ -120,9 +121,8 @@ ggscatter(mds_SP, x = "Dim.1", y = "Dim.2",
           palette = colores,
           size = 3)
 ```
+
 Así como los vertebrados siguen estando agrupados, los antrópodos están más dispersos, aunque se vea una acumulación en la parte derecha del gráfico. Los moluscos y cnidarios también han quedado más agrupados que en los kernels anteriores.
 
-
 $\textbf{Conclusión:}$
-
-
+Hemos visto que los vertebrados tienden a agruparse en los tres kernels, sin embargo, observando el resto de animales, vemos que en el Vertex Histogram no hay una clasificación clara, mientras que en el Shortest-Path y en el Pyramid Match ya vemos una agrupación más definida de ciertas especies; sin embargo, concluimos que el Pyramid Match és el que nos ofrece la mejor agrupación.
