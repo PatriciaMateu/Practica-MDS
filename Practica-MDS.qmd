@@ -124,4 +124,4 @@ ggscatter(mds_SP, x = "Dim.1", y = "Dim.2",
 
 Así como los vertebrados siguen estando agrupados, los antrópodos están más dispersos, aunque se vea una acumulación en la parte derecha del gráfico. Los moluscos y cnidarios también han quedado más agrupados que en los kernels anteriores.
 
-$\textbf{Conclusión:}$ Hemos visto que los vertebrados tienden a agruparse en los tres kernels, sin embargo, observando el resto de animales, vemos que en el Vertex Histogram no hay una clasificación clara, mientras que en el Shortest-Path y en el Pyramid Match ya vemos una agrupación más definida de ciertas especies; sin embargo, concluimos que el Pyramid Match és el que nos ofrece la mejor agrupación.
+$\textbf{Conclusión:}$ Hemos visto que los vertebrados tienden a agruparse en los tres kernels, sin embargo, observando el resto de animales, vemos que en el Vertex Histogram no hay una clasificación clara, mientras que en el Shortest-Path y en el Pyramid Match ya vemos una agrupación más definida de ciertas especies; así, concluimos que el Pyramid Match és el que nos ofrece la mejor agrupación.
