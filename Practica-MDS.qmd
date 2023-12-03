@@ -23,14 +23,13 @@ animals_PM <- read.table("ANIMALS-matrixPM.txt", header=FALSE)
 animals_SP <- read.table("ANIMALS-matrixSP.txt", header=FALSE)
 animals_VH <- read.table("ANIMALS-matrixVH.txt", header=FALSE)
 animals_phylum <- read.table("fileListANIMAL_phylum.txt", header=FALSE)
-
 ```
+
 Observamos que las matrices anteriores son de similitud, por lo tanto, aplicaremos una función a cada una de ellas para obtener las matrices de distancias. Aplicamos la función siguiente:
 
 $$
 f(x) = \sqrt{2(1-x)},
-$$ 
-donde $x$ representa cada entrada de las matrices. Hemos visto que esta función es una distancia.
+$$ donde $x$ representa cada entrada de las matrices. Hemos visto que esta función es una distancia.
 
 ```{r,warning=FALSE,message=FALSE}
 f <- function(x){sqrt(2*(1-x))}
@@ -52,8 +51,7 @@ cambio_nombres <- c("Vertebrates", "Lancelet", "Ascidian","Hechinoderms",
                     "Placozoans", "Poriferans")
 
 animals_phylum <- animals_phylum %>%
-        mutate("Animales" = cambio_nombres[V2]) %>% 
-  glimpse()
+        mutate("Animales" = cambio_nombres[V2])
 ```
 
 Ahora que ya tenemos los datos listos, podemos empezar con el escalamiento multidimensional. Aplicaremos la función `cmdscale()` a cada matriz de distancias y tomaremos una decisión final.
@@ -68,15 +66,17 @@ library(ggpubr)
 mds_VH <- dist_VH %>%          
   cmdscale() %>%
   as_tibble() %>% 
-  mutate("PHYLUM" = animals_phylum$Animales) #añadimos la variable phylum para poder agrupar
+  mutate("PHYLUM" = animals_phylum$Animales) 
+  #añadimos la variable phylum para poder agrupar
 
 colnames(mds_VH) <- c("Dim.1", "Dim.2", "PHYLUM")
 colores <- c("Vertebrates" = "blue", "Lancelet" = "red", "Ascidian" = "green",
-             "Hechinoderms" = "yellow", "Hemichordates" = "purple", "Flatworms" = "pink", 
-             "Nematodes" = "orange", "Annelids" = "black", "Poriferans" = "#FF7256",
-             "Brachiopodas" = "#556B2F", "Arthropods" = "#00BFFF", "Mollusks" = "#EE1289",
-             "Placozoans" = "#8B1A1A", "Cnidarians" = "#C0FF3E") #elegimos los colores de cada grupo
-
+             "Hechinoderms" = "yellow", "Hemichordates" = "purple", 
+             "Flatworms" = "pink", "Nematodes" = "orange", "Annelids" = "black", 
+              "Poriferans" = "#FF7256", "Brachiopodas" = "#556B2F", 
+             "Arthropods" = "#00BFFF", "Mollusks" = "#EE1289",
+            "Placozoans" = "#8B1A1A", "Cnidarians" = "#C0FF3E")
+              #elegimos los colores de cada grupo
 
 ggscatter(mds_VH, x = "Dim.1", y = "Dim.2",
           color = "PHYLUM",
@@ -124,5 +124,4 @@ ggscatter(mds_SP, x = "Dim.1", y = "Dim.2",
 
 Así como los vertebrados siguen estando agrupados, los antrópodos están más dispersos, aunque se vea una acumulación en la parte derecha del gráfico. Los moluscos y cnidarios también han quedado más agrupados que en los kernels anteriores.
 
-$\textbf{Conclusión:}$
-Hemos visto que los vertebrados tienden a agruparse en los tres kernels, sin embargo, observando el resto de animales, vemos que en el Vertex Histogram no hay una clasificación clara, mientras que en el Shortest-Path y en el Pyramid Match ya vemos una agrupación más definida de ciertas especies; sin embargo, concluimos que el Pyramid Match és el que nos ofrece la mejor agrupación.
+$\textbf{Conclusión:}$ Hemos visto que los vertebrados tienden a agruparse en los tres kernels, sin embargo, observando el resto de animales, vemos que en el Vertex Histogram no hay una clasificación clara, mientras que en el Shortest-Path y en el Pyramid Match ya vemos una agrupación más definida de ciertas especies; sin embargo, concluimos que el Pyramid Match és el que nos ofrece la mejor agrupación.
